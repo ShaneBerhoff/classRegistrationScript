@@ -21,6 +21,10 @@ This script automates the process of registering for classes at Emory University
    - Firefox: [geckodriver](https://github.com/mozilla/geckodriver/releases)
    - Chrome: [chromedriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
    - Safari: Safari comes with its driver.
+4. **Script Location:**
+   - **Accessible Path:** Place the script in a directory that is accessible via your system's PATH environment variable. This allows you to run the script from any location in your command line interface.
+   - **Updating PATH:** If you're not sure about your PATH, you can either add the script's directory to your PATH or navigate to the script's directory in the command line before running it.
+   - **Permissions:** Ensure that the script file has executable permissions. On Unix-like systems, you can set this with `chmod +x classRegistration.py`.
 
 ## Usage
 
