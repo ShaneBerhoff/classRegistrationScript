@@ -31,11 +31,11 @@ This script automates the process of registering for classes at Emory University
 1. **Edit Script:** Open the script in a text editor and replace `student-username` and `student-password` with your actual Emory OPUS login credentials.
 2. **Run the Script:** Execute the script from the command line with the hour and minute you want the script to start enrolling in classes. This should be the time that registration opens. Use 24-hour format for the time.
    ```
-   python3 classRegistration.py [Hour] [Minute]
+   classRegistration.py [Hour] [Minute]
    ```
    Example if class registration is at 5:30 PM:
    ```
-   python3 classRegistration.py 17 30
+   classRegistration.py 17 30
    ```
    This command will run the script, login to OPUS, and wait for a 5:30 PM enrollment time.
    So in this example it would be essential to run the script a few minutes before 5:30 PM so that it can login and load up.
@@ -50,13 +50,15 @@ This script automates the process of registering for classes at Emory University
 
 ## Important Notes
 
-- **Class Validation:** If classes are not verified before running the script then the enrollment will not work.
-- **Shopping Cart:** There is assumed to be only 1 shopping cart. If there are multiple carts when running it will not be able to navigate correctly.
+- **Class Validation:** Ensure that classes are validated before running the script, as unvalidated classes may lead to unsuccessful enrollment.
+- **Shopping Cart Handling:**
+   - If the script logs in but fails to automatically navigate to the shopping cart, you may manually click on the shopping cart tab. The script will still function correctly after this manual intervention; simply allow it to continue running uninterrupted.
+   - It's important to note that the script is designed to work with only one shopping cart. If multiple shopping carts are present, the script will not navigate correctly. You need to manually select the correct shopping cart; then allow it to continue running and it will do the rest correctly
 - **Timing:** Ensure the computer's time is synchronized correctly.
 - **Internet Connection:** A stable internet connection is required.
 - **Browser Compatibility:** Make sure the script is using the correct web driver for your browser.
 - **Error Handling:** The script has basic error handling for timeouts and web driver exceptions.
-- **Functionality:** It was functional as of 1/25/2024. Changes to Emory's registration page may have broken parts of it, but it should easily be fixable.
+- **Functionality:** The script was functional as of 1/25/2024. Changes to Emory's registration page may have broken parts of it, but it should easily be fixable.
 
 ## Disclaimer
 
