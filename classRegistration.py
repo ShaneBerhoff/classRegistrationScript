@@ -12,17 +12,26 @@ import datetime
 username = "student-username"
 password = "student-password"
 
+# url currently set to emory course enrollment
+url = "https://saprod.emory.edu/psc/saprod_8/EMPLOYEE/SA/c/SSR_STUDENT_FL.SSR_MD_SP_FL.GBL?Action=U&MD=Y&GMenu=SSR_STUDENT_FL&GComp=SSR_START_PAGE_FL&GPage=SSR_START_PAGE_FL&scname=CS_SSR_MANAGE_CLASSES_NAV"
+# page elements
+cart_id = "SCC_LO_FL_WRK_SCC_VIEW_BTN$3"
+first_checkbox_id = "DERIVED_REGFRM1_SSR_SELECT$0"
+checkbox_class = "ps-checkbox"
+enroll_id = "DERIVED_SSR_FL_SSR_ENROLL_FL"
+
 def open_and_reload(reload_hour, reload_minute):
-    # url currently set to emory class shopping cart
-    url = "https://saprod.emory.edu/psc/saprod_8/EMPLOYEE/SA/c/SSR_STUDENT_FL.SSR_MD_SP_FL.GBL?Action=U&MD=Y&GMenu=SSR_STUDENT_FL&GComp=SSR_START_PAGE_FL&GPage=SSR_START_PAGE_FL&scname=CS_SSR_MANAGE_CLASSES_NAV"
     
-    # This opens browser and URL
-    try:
+    try: # Open browser and URL
         driver = webdriver.Firefox()  # can also use .Chrome or .Safari here
         driver.get(url)
         print("Connected to page")
-        
-        # Find the username and password fields and input the credentials
+    except WebDriverException as error: #catches any issues
+        print(f"There was an error loading the page: {error}")
+        sys.exit(1)
+    
+    try: # User login
+        # Find the username and password fields and inputs the credentials
         username_field = driver.find_element(By.ID, "userid")
         password_field = driver.find_element(By.ID, "pwd")
         username_field.send_keys(username)
@@ -32,26 +41,24 @@ def open_and_reload(reload_hour, reload_minute):
         login_button = driver.find_element(By.XPATH, "//input[@value='Login']")
         login_button.click()
         print("User logged in")
-        
-        # waits for the shopping cart to load then clicks it
-        if element_ready(driver, "SCC_LO_FL_WRK_SCC_VIEW_BTN$3"):
-            shopping_cart_element = driver.find_element(By.ID, "SCC_LO_FL_WRK_SCC_VIEW_BTN$3")
-            shopping_cart_element.click()
-            print("Entering shopping cart")
-        else:
-            print("Shopping cart not ready")
-            sys.exit(1)
-    except WebDriverException as error: #catches any issues
-            print(f"There was an error: {error}")
-            sys.exit(1)
+    except WebDriverException as error:
+        print(f"Failure to login: {error}")
+        sys.exit(1)
+    
+    # wait for the shopping cart then click it
+    if wait_for_element(driver, cart_id):
+        driver.find_element(By.ID, cart_id).click()
+        print("Navigated to shopping cart")
+    else:
+        print("Failed to navigate to shopping cart tab")
 
-    try:
+    try: # reload time
         # calculates the reload time delay based on inputs and current time
         now = datetime.datetime.now()
-        reload_time_today = datetime.datetime(now.year, now.month, now.day, reload_hour, reload_minute)
-        if now > reload_time_today:
-            reload_time_today += datetime.timedelta(days=1)
-        delay = (reload_time_today - now).total_seconds()
+        reload_time = datetime.datetime(now.year, now.month, now.day, reload_hour, reload_minute)
+        if now > reload_time:
+            raise Exception("Selected time already passed for today")
+        delay = (reload_time - now).total_seconds()
 
         # waits
         print("Waiting for enrollment time")
@@ -61,32 +68,36 @@ def open_and_reload(reload_hour, reload_minute):
         # renaviagion to current url so that browser treats it as a GET request instead of
         # another POST request which it would for driver.refresh() causing a popup warning
         driver.get(driver.current_url)
-        print("Page reloaded")
+        print(f"Page reloaded sucessfully at {reload_hour}:{reload_minute}")
     except TimeoutException as error:
         print(f"Timeout: {error}")
         sys.exit(1)
     except Exception as error:
-        print(f"An unknown error occured: {error}")
+        print(f"An error occured: {error}")
         sys.exit(1)
     
     # Wait for the first checkbox to be ready
-    if element_ready(driver, "DERIVED_REGFRM1_SSR_SELECT$0"):
+    if wait_for_element(driver, first_checkbox_id):
         # Now select all checkboxes
-        checkboxes = driver.find_elements(By.CLASS_NAME, "ps-checkbox")
-        print("Selecting classes")
+        checkboxes = driver.find_elements(By.CLASS_NAME, checkbox_class)
         for checkbox in checkboxes:
             if not checkbox.is_selected():
                 checkbox.click()
+        print("Classes selected")
     else:
         print("First checkbox not ready")
         sys.exit(1)
     
-    # Find and click the Enroll button
-    enroll_button = driver.find_element(By.ID, "DERIVED_SSR_FL_SSR_ENROLL_FL")
-    enroll_button.click()
-    print("Enrollment requested")
+    try: # enroll
+        # Find and click the Enroll button
+        enroll_button = driver.find_element(By.ID, enroll_id)
+        enroll_button.click()
+        print("Enrollment requested")
+    except:
+        print("Could not find enrollment button")
+        sys.exit(1)
 
-    try:
+    try: # yes
         # Wait for the Yes button to be present in the DOM
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//*[@id='#ICYes']"))
@@ -97,45 +108,45 @@ def open_and_reload(reload_hour, reload_minute):
             EC.element_to_be_clickable((By.XPATH, "//*[@id='#ICYes']"))
         )
 
+        # Click
         yes_button.click()
-        
+        print("Enjoy your classes!")
     except TimeoutException:
         print("Yes button not ready or not found")
         sys.exit(1)
-    
-    print("Enjoy your classes!")
 
-# Function to check if an element is visible
-def element_ready(driver, element_id, timeout=10):
+# Function to wait for an element to exist and be unobstructed
+def wait_for_element(driver, element_id, timeout=10):
     try:
-        # Wait for element to be present in DOM and visible
-        element = WebDriverWait(driver, timeout).until(
+        # Wait for the element to be present in DOM and visible
+        WebDriverWait(driver, timeout).until(
             EC.visibility_of_element_located((By.ID, element_id))
         )
 
-        end_time = time.time() + timeout
-        while time.time() < end_time:
-            if not is_element_obscured(driver, element):
-                return True
-            time.sleep(1) # time interval for obstruction check
-    except WebDriverException as e:
-        print(f"WebDriverException occurred: {e}")
-    return False
+        # Retrieve the element by ID
+        element = driver.find_element(By.ID, element_id)
 
-# function to check for obstruction
-def is_element_obscured(driver, element):
-    return driver.execute_script(
-        "var elem = arguments[0], box = elem.getBoundingClientRect(), "
-        "cx = box.left + box.width / 2, cy = box.top + box.height / 2, "
-        "e = document.elementFromPoint(cx, cy); "
-        "return (e !== elem && !elem.contains(e));",
-        element
-    )
+        # Wait until the element is unobstructed
+        WebDriverWait(driver, timeout).until(
+            lambda d: not d.execute_script(
+                "var elem = arguments[0], box = elem.getBoundingClientRect(), "
+                "cx = box.left + box.width / 2, cy = box.top + box.height / 2, "
+                "e = document.elementFromPoint(cx, cy); "
+                "return (e !== elem && !elem.contains(e));",
+                element
+            )
+        )
+    except TimeoutException:
+        print(f"Timeout waiting for element with ID '{element_id}' to be ready.")
+        return False
+    except Exception as error:
+        print(f"Error when waiting for element with ID '{element_id}': {error}")
+    return True
 
 #main
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python3 classRegistration.py [Hour (24 format)] [Minute]")
+        print("Usage: classRegistration.py [Hour (24 format)] [Minute]")
         sys.exit(1)
 
     reload_hour = int(sys.argv[1])
