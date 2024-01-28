@@ -18,18 +18,26 @@ This script automates the process of registering for classes at Emory University
    pip install selenium
    ```
 3. **Web Driver:** Download and set up the appropriate web driver for your browser:
-   - Firefox: [geckodriver](https://github.com/mozilla/geckodriver/releases)
-   - Chrome: [chromedriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
-   - Safari: Safari comes with its driver.
+   - Firefox: Download [geckodriver](https://github.com/mozilla/geckodriver/releases). 
+     - **For macOS/Linux:** Move the `geckodriver` executable to `/usr/local/bin`.
+     - **For Windows:** Extract the `geckodriver` executable and place it in a directory of your choice. Then, add that directory to your system's PATH environment variable.
+   - Chrome: Download [chromedriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) (alternate link: [Chrome for Testing](https://googlechromelabs.github.io/chrome-for-testing/#stable)).
+     - **For macOS/Linux:** Move the `chromedriver` executable to `/usr/local/bin`.
+     - **For Windows:** Extract the `chromedriver` executable to a directory of your choice and add that directory to your system's PATH.
+   - Safari (macOS only): Enable Remote Automation in the Develop tab of the browser settings.
 4. **Script Location:**
    - **Accessible Path:** Place the script in a directory that is accessible via your system's PATH environment variable. This allows you to run the script from any location in your command line interface.
    - **Updating PATH:** If you're not sure about your PATH, you can either add the script's directory to your PATH or navigate to the script's directory in the command line before running it.
-   - **Permissions:** Ensure that the script file has executable permissions. On Unix-like systems, you can set this with `chmod +x classRegistration.py`.
+   - **Permissions:** Ensure that the script file has executable permissions.
+      - **For Unix-like systems (macOS/Linux):** Ensure that the script file has executable permissions. You can set this with the command `chmod +x classRegistration.py`.
+      - **For Windows:** Windows does not require setting executable permissions in the same way as Unix-like systems. However, ensure you have the necessary permissions to execute scripts on your system.
 
 ## Usage
 
-1. **Edit Script:** Open the script in a text editor and replace `student-username` and `student-password` with your actual Emory OPUS login credentials.
-2. **Run the Script:** Execute the script from the command line with the hour and minute you want the script to start enrolling in classes. This should be the time that registration opens. Use 24-hour format for the time.
+1. **Edit Script:** Open the script in a text editor
+   - Uncomment the browser you want to use in the `# Select Browser` section
+   - Replace `student-username` and `student-password` with your actual Emory OPUS login credentials.
+3. **Run the Script:** Execute the script from the command line with the hour and minute you want the script to start enrolling in classes. This should be the time that registration opens. Use 24-hour format for the time.
    ```
    classRegistration.py [Hour] [Minute]
    ```
@@ -58,7 +66,7 @@ This script automates the process of registering for classes at Emory University
 - **Internet Connection:** A stable internet connection is required.
 - **Browser Compatibility:** Make sure the script is using the correct web driver for your browser.
 - **Error Handling:** The script has basic error handling for timeouts and web driver exceptions.
-- **Functionality:** The script was functional as of 1/25/2024. Changes to Emory's registration page may have broken parts of it, but it should easily be fixable.
+- **Functionality:** The script was functional as of 1/28/2024. Changes to Emory's registration page may have broken parts of it, but it should easily be fixable.
 
 ## Disclaimer
 
