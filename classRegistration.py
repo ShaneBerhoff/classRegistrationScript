@@ -8,6 +8,11 @@ from selenium.common.exceptions import WebDriverException, TimeoutException
 import time
 import datetime
 
+# Select Browser
+browser = "Firefox"
+#browser = "Chrome"
+#browser = "Safari"
+
 # Username and password for login
 username = "student-username"
 password = "student-password"
@@ -23,7 +28,16 @@ enroll_id = "DERIVED_SSR_FL_SSR_ENROLL_FL"
 def open_and_reload(reload_hour, reload_minute):
     
     try: # Open browser and URL
-        driver = webdriver.Firefox()  # can also use .Chrome or .Safari here
+        if browser == "Firefox":
+            driver = webdriver.Firefox()
+        elif browser == "Chrome":
+            driver = webdriver.Chrome()
+        elif browser == "Safari":
+            driver = webdriver.Safari()
+        else:
+            raise WebDriverException("Invalid browser selected")
+        
+        driver.maximize_window()
         driver.get(url)
         print("Connected to page")
     except WebDriverException as error: #catches any issues
@@ -115,6 +129,11 @@ def open_and_reload(reload_hour, reload_minute):
         print("Yes button not ready or not found")
         sys.exit(1)
 
+    # Stops Safari and Chrome from imediatly closing
+    if browser=="Safari" or browser=="Chrome":
+        print("Browser will automatically close in 1 minute.")
+        time.sleep(60)
+
 # Function to wait for an element to exist and be unobstructed
 def wait_for_element(driver, element_id, timeout=10):
     try:
@@ -136,11 +155,17 @@ def wait_for_element(driver, element_id, timeout=10):
                 element
             )
         )
+        
+        # Wait until the element is clickable
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, element_id))
+        )
     except TimeoutException:
         print(f"Timeout waiting for element with ID '{element_id}' to be ready.")
         return False
     except Exception as error:
         print(f"Error when waiting for element with ID '{element_id}': {error}")
+        return False
     return True
 
 #main
