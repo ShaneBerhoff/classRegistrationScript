@@ -1,5 +1,7 @@
 # README for Class Registration Script
 
+⚠️ This repository is no longer maintained. A [new CLI tool](https://github.com/ShaneBerhoff/course-sniper) has been developed that fixes a lot of the problems that this implementation had. Go check it out for the latest version. Old docs are preserved below.
+
 ## Description
 
 This script automates the process of registering for classes at Emory University through OPUS. It utilizes Selenium WebDriver for browser automation. The script logs into the student portal, waits until a specified time, and then attempts to enroll in the classes added to the shopping cart.
